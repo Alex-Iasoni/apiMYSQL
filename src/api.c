@@ -69,3 +69,15 @@ MedicalRecord* readMedicalRecord(int id_socdet)
 
 	return medrec;
 }
+
+// Reads medical records on the database. Returns NULL on failure.
+Diagnostic* readDiagnostic(int id_socdet)
+{
+	short diagnostic_number = 10; // to fetch !!!
+
+	Diagnostic *diagnostic = allocateMedicalRecord(diagnostic_number);
+
+	// fetch and fill 'medrec' attributes !!!
+
+	return medrec;
+}

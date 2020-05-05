@@ -27,6 +27,10 @@ MedicalRecord* allocateMedicalRecord(short diagnostic_number)
 }
 
 
+
+
+
+
 // Frees a medical record passed by address, and sets said address to NULL.
 void freeMedicalRecord(MedicalRecord **medrec)
 {
