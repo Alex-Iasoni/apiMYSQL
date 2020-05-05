@@ -1,45 +1,30 @@
 #include <stdio.h>
-// #include <stdlib.h>
+#include <stdlib.h>
 
-#include <mysql.h>
+
 
 #include "api.h"
-
-
-void connectToDatabase(void)
+#include <string.h>
+#include <mysql.h>
+MYSQL  connectToDatabase(void)
 {
+	
 	MYSQL mysql;
 	mysql_init(&mysql);
 	mysql_options(&mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+	
 
-	if (mysql_real_connect(&mysql, "localhost", "root", "root", "BehaviorAnalysis", 0, NULL, 0))
-	{
-		mysql_query(&mysql, "SELECT * FROM illness"); // browsing the 'illness' table.
+	if(mysql_real_connect(&mysql, "localhost", "root", "root", "CAD", 0, NULL, 0))
+	 {
+	 	printf("connect mysql\n");
+      
+    }
+    else
+    {
+        printf("Une erreur s'est produite lors de la connexion à la BDD!");
+    }
+	return mysql;
 
-		MYSQL_RES *result = mysql_use_result(&mysql);
-		MYSQL_ROW row = NULL;
-
-		unsigned int fields_number = mysql_num_fields(result); // Returns the number of columns, in a table.
-
-		while ((row = mysql_fetch_row(result))) // assignment and testing!
-		{
-			unsigned long *lengths = mysql_fetch_lengths(result); // columns lengths of the current row, in a table.
-
-			for (int i = 0; i < fields_number; ++i)
-			{
-				printf("[%.*s] ", (int) lengths[i], row[i] ? row[i] : "NULL");
-			}
-			printf("\n");
-		}
-
-		mysql_free_result(result);
-		mysql_close(&mysql);
-	}
-
-	else
-	{
-		printf("Error: cannot connect to the database!\n");
-	}
 }
 
 
@@ -70,14 +55,41 @@ MedicalRecord* readMedicalRecord(int id_socdet)
 	return medrec;
 }
 
-// Reads medical records on the database. Returns NULL on failure.
-Diagnostic* readDiagnostic(int id_socdet)
+
+Diagnostic* readDiagnostic(int id_diag)
 {
-	short diagnostic_number = 10; // to fetch !!!
+	Diagnostic *diagnostic = (Diagnostic*) calloc(1, sizeof(Diagnostic));
 
-	Diagnostic *diagnostic = allocateMedicalRecord(diagnostic_number);
+MYSQL mysql = connectToDatabase();
 
+			char * query = strcat("SELECT doct.id_diag, date_diag, ill.name, illp.probability FROM doctor_diagnostic as doct INNER JOIN illness_probability as illp ON doct.id_diag = illp.id_diag INNER JOIN illness as ill ON ill.id_ill = illp.id_ill WHERE doct.id_diag = ", (char *) id_diag);
+		mysql_query(&mysql, query); 
+
+		MYSQL_RES *result = mysql_use_result(&mysql);
+		MYSQL_ROW row = NULL;
+		diagnostic->id_diag = id_diag;
+
+		
+		int i = 0;
+
+		while ((row = mysql_fetch_row(result))) // assignment and testing!
+		{
+			
+				diagnostic->date_diag[i] = (char) row[1];
+				diagnostic->illnessArray[i] = (Illness) row[2];
+				
+				diagnostic->illnessProbabilityArray[i]= strtod(row[3], NULL);
+				i++;
+			}
+		
+		
+
+		mysql_free_result(result);
+		mysql_close(&mysql);
+	
 	// fetch and fill 'medrec' attributes !!!
-
-	return medrec;
+	printDiagnostic(diagnostic);
+	return diagnostic;
 }
+
+

@@ -10,9 +10,9 @@ void testStructures(void);
 
 int main(void)
 {
-	testStructures();
+	//testStructures();
+readDiagnostic(1);
 
-	connectToDatabase();
 
 	return 0;
 }

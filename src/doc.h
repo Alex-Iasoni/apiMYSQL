@@ -10,7 +10,6 @@ typedef short Illness;
 typedef short Symptom;
 
 
-// // Unused here:
 // typedef struct
 // {
 // 	Illness illness;
